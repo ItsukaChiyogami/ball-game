@@ -1,3 +1,13 @@
+// random colors
+// function
+function generateRandomColor() {
+    // Menghasilkan nilai R, G, B acak antara 0 dan 255
+    var r = floor(random(256));
+    var g = floor(random(256));
+    var b = floor(random(256));
+    return color(r, g, b);
+}
+
 // Variabel Global
 // Langkah 1: Variabel Layar
 // 0: Initial Screen
@@ -30,9 +40,9 @@ var lastAddTime = 0;
 var minGapHeight = 200;
 var maxGapHeight = 300;
 var wallWidth = 30;
-var wallColor; // Akan diinisialisasi di setup()
+var wallColor; // Variabel global ini tidak lagi digunakan, warna disimpan di array walls
 var wallRadius = 10; // Variabel baru untuk radius sudut memutar
-// [gapWallX, gapWallY, gapWallWidth, gapWallHeight, wallScored]
+// Format walls: [gapWallX, gapWallY, gapWallWidth, gapWallHeight, wallScored, wallColor]
 var walls = [];
 
 // Langkah 6: Variabel Health dan Score
@@ -49,7 +59,7 @@ function setup() {
     // Pindahkan deklarasi color() ke dalam setup()
     ballColor = color(0, 255, 255);
     racketColor = color(0, 255, 255);
-    wallColor = color(0, 0, 255); // DIUBAH: Biru (0, 0, 255)
+    // wallColor = color(generateRandomColor()); // Dihapus, warna disimpan per dinding
     
     // Mengatur posisi awal bola
     ballx = width / 4; //mengatur posisi bola di sumbu x
@@ -210,7 +220,9 @@ function wallAdder() {
         var randHeight = round(random(minGapHeight, maxGapHeight));
         var randY = round(random(0, height - randHeight));
         
-        var randWall = [width, randY, wallWidth, randHeight, 0];
+        var newWallColor = generateRandomColor();
+
+        var randWall = [width, randY, wallWidth, randHeight, 0, newWallColor];
         walls.push(randWall);
         lastAddTime = millis();
     }
@@ -225,20 +237,21 @@ function wallHandler() {
     }
 }
 
-function wallDrawer(index) { // DIPERBARUI: Menambahkan radius pada rect()
+function wallDrawer(index) {
     var wall = walls[index];
     var gapWallX = wall[0];
     var gapWallY = wall[1];
     var gapWallWidth = wall[2];
     var gapWallHeight = wall[3];
-    rectMode(CORNER);
-    fill(wallColor);
     
-    // Dinding Atas: Sudut memutar di bagian bawah (di atas celah)
-    // rect(x, y, w, h, tl, tr, br, bl)
+    var currentColor = wall[5];
+    
+    rectMode(CORNER);
+    fill(currentColor); 
+    
+
     rect(gapWallX, 0, gapWallWidth, gapWallY, 0, 0, wallRadius, wallRadius);
     
-    // Dinding Bawah: Sudut memutar di bagian atas (di bawah celah)
     rect(gapWallX, gapWallY + gapWallHeight, gapWallWidth, height - (gapWallY + gapWallHeight), wallRadius, wallRadius, 0, 0);
 }
 
